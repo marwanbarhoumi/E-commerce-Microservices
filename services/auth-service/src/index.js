@@ -29,6 +29,7 @@ app.use(express.json()); // نقولوله إنا نقبل بيانات بصيغ
 // ── 5. الـ Routes ────────────────────────────────────────────
 
 // كل طلبية تبدأ بـ /api/auth راه تروح لملف auth.routes.js
+app.use('/', authRoutes);
 app.use('/api/auth', authRoutes);
 
 // ── 6. Health Check ──────────────────────────────────────────
