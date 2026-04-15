@@ -68,3 +68,14 @@ exports.remove = async (req, res) => {
     res.status(500).json({ message: 'خطأ في السيرفر', error: err.message });
   }
 };
+
+// ── uploadImage ───────────────────────────────────────────────
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ message: 'Aucun fichier envoyé' });
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ imageUrl });
+  } catch (err) {
+    res.status(500).json({ message: 'Erreur upload', error: err.message });
+  }
+};

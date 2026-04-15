@@ -12,6 +12,7 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ── Rate Limiting ─────────────────────────────────────────────
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
@@ -53,24 +54,43 @@ const proxyRequest = (targetUrl) => async (req, res) => {
   try {
     const url = `${targetUrl}${req.originalUrl}`;
 
+    const headers = {};
+
+    if (req.headers.authorization) {
+      headers.authorization = req.headers.authorization;
+    }
+
+    headers['content-type'] = 'application/json';
+
+    if (req.headers['x-user-id']) {
+      headers['x-user-id'] = req.headers['x-user-id'];
+    }
+
+    if (req.headers['x-user-role']) {
+      headers['x-user-role'] = req.headers['x-user-role'];
+    }
+
+    console.log('➡️ Forwarding to:', url);
+    console.log('➡️ Method:', req.method);
+    console.log('➡️ Body:', req.body);
+
     const response = await axios({
-      method:  req.method,
+      method: req.method,
       url,
-      data:    req.body,
-      headers: {
-        ...req.headers,
-        host: undefined, // نحذف الـ host الأصلي
-      },
+      data: req.body,
+      headers,
       timeout: 10000,
     });
 
-    res.status(response.status).json(response.data);
+    return res.status(response.status).json(response.data);
   } catch (err) {
+    console.error('❌ Proxy error:', err.message);
+
     if (err.response) {
-      res.status(err.response.status).json(err.response.data);
-    } else {
-      res.status(503).json({ message: 'Service غير متاح' });
+      return res.status(err.response.status).json(err.response.data);
     }
+
+    return res.status(503).json({ message: 'Service غير متاح' });
   }
 };
 
@@ -78,6 +98,8 @@ const proxyRequest = (targetUrl) => async (req, res) => {
 app.use('/api/auth',     proxyRequest(process.env.AUTH_SERVICE_URL));
 app.use('/api/products', proxyRequest(process.env.PRODUCT_SERVICE_URL));
 app.use('/api/orders',   proxyRequest(process.env.ORDER_SERVICE_URL));
+app.use('/api/admin',    proxyRequest(process.env.AUTH_SERVICE_URL)); // ← zid hedhi
+
 
 // ── Health Check ──────────────────────────────────────────────
 app.get('/health', (req, res) => {

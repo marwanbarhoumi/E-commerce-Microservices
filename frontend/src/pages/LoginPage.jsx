@@ -1,12 +1,10 @@
-// ============================================================
-//  LoginPage — صفحة تسجيل الدخول
-// ============================================================
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form,    setForm]    = useState({ email: '', password: '' });
   const [error,   setError]   = useState('');
@@ -21,54 +19,64 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/login', form);
-      // نحفظوا الـ Token والمستخدم في localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('user',  JSON.stringify(data.user));
-      navigate('/products');
+
+      // redirect selon role
+      if (data.user.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/products');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'خطأ في تسجيل الدخول');
+      setError(err.response?.data?.message || t('login.error'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>تسجيل الدخول</h2>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md">
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+          {t('login.title')}
+        </h2>
 
-        {error && <p style={styles.error}>{error}</p>}
+        {error && (
+          <div className="bg-red-50 text-red-500 text-sm text-center rounded-lg px-4 py-3 mb-4">
+            {error}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            style={styles.input}
-            type="email" name="email" placeholder="الإيميل"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+            type="email" name="email"
+            placeholder={t('login.email')}
             value={form.email} onChange={handleChange} required
           />
           <input
-            style={styles.input}
-            type="password" name="password" placeholder="كلمة المرور"
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+            type="password" name="password"
+            placeholder={t('login.password')}
             value={form.password} onChange={handleChange} required
           />
-          <button style={styles.btn} disabled={loading}>
-            {loading ? 'جاري الدخول...' : 'دخول'}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-xl transition disabled:opacity-60"
+          >
+            {loading ? t('login.loading') : t('login.submit')}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '16px' }}>
-          ما عندكش حساب؟{' '}
-          <Link to="/register" style={{ color: '#e94560' }}>سجّل الآن</Link>
+        <p className="text-center text-sm text-gray-500 mt-5">
+          {t('login.noAccount')}{' '}
+          <Link to="/register" className="text-red-500 hover:underline">
+            {t('login.register')}
+          </Link>
         </p>
       </div>
     </div>
   );
 }
-
-const styles = {
-  page:  { display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '90vh', background: '#f5f5f5' },
-  card:  { background: '#fff', padding: '40px', borderRadius: '12px', width: '100%', maxWidth: '400px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' },
-  title: { textAlign: 'center', marginBottom: '24px', color: '#1a1a2e' },
-  input: { display: 'block', width: '100%', padding: '12px', marginBottom: '16px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '15px', boxSizing: 'border-box' },
-  btn:   { width: '100%', padding: '12px', background: '#e94560', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', cursor: 'pointer' },
-  error: { background: '#fff0f0', color: '#e94560', padding: '10px', borderRadius: '8px', marginBottom: '16px', textAlign: 'center' },
-};

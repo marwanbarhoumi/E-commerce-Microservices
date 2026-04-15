@@ -200,3 +200,36 @@ exports.cancel = async (req, res) => {
     res.status(500).json({ message: 'خطأ في السيرفر', error: err.message });
   }
 };
+// ── 6. getAllOrders — كل الطلبيات (admin) ─────────────────────
+// GET /api/orders/admin/all
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().sort({ createdAt: -1 });
+    res.json({ orders, total: orders.length });
+  } catch (err) {
+    res.status(500).json({ message: 'خطأ في السيرفر', error: err.message });
+  }
+};
+
+// ── 7. getStats — إحصائيات (admin) ───────────────────────────
+// GET /api/orders/admin/stats
+
+exports.getStats = async (req, res) => {
+  try {
+    const totalOrders   = await Order.countDocuments();
+    const totalRevenue  = await Order.aggregate([
+      { $match: { status: { $ne: 'cancelled' } } },
+      { $group: { _id: null, total: { $sum: '$total' } } }
+    ]);
+    const pendingOrders = await Order.countDocuments({ status: 'pending' });
+
+    res.json({
+      totalOrders,
+      totalRevenue: totalRevenue[0]?.total || 0,
+      pendingOrders,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'خطأ في السيرفر', error: err.message });
+  }
+};

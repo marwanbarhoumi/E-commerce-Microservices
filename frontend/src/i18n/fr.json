@@ -1,0 +1,26 @@
+{
+  "login": {
+    "title": "Connexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "loading": "Connexion...",
+    "noAccount": "Pas de compte ?",
+    "register": "S'inscrire",
+    "error": "Email ou mot de passe incorrect"
+  },
+  "navbar": {
+    "products": "Produits",
+    "orders": "Commandes",
+    "dashboard": "Dashboard",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "title": "Dashboard Admin",
+    "welcome": "Bienvenue",
+    "users": "Utilisateurs",
+    "orders": "Commandes",
+    "products": "Produits",
+    "revenue": "Revenus"
+  }
+}

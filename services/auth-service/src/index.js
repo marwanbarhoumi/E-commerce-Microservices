@@ -8,7 +8,8 @@
 const express  = require('express');   // إطار العمل — يخلينا نبني سيرفر HTTP
 const mongoose = require('mongoose');  // يخلينا نتكلم مع MongoDB
 const cors     = require('cors');      // يسمح للـ frontend يبعث طلبات للسيرفر
-require('dotenv').config();            // يقرأ المتغيرات من ملف .env
+require('dotenv').config();   
+const adminRoutes = require('./routes/admin.routes');         // يقرأ المتغيرات من ملف .env
 
 // ── 2. استيراد الـ Routes ────────────────────────────────────
 
@@ -31,6 +32,7 @@ app.use(express.json()); // نقولوله إنا نقبل بيانات بصيغ
 // كل طلبية تبدأ بـ /api/auth راه تروح لملف auth.routes.js
 app.use('/', authRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes); // ← jdid
 
 // ── 6. Health Check ──────────────────────────────────────────
 // طريقة نتأكدوا بيها إن السيرفر شاغل ومزيان
