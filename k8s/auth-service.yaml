@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: marwan/auth-service:latest
+        ports:
+        - containerPort: 3001
+        env:
+        - name: PORT
+          value: "3001"
+        - name: JWT_SECRET
+          value: "your_super_secret_key_change_this"
+        - name: JWT_EXPIRES_IN
+          value: "7d"
+        - name: ADMIN_EMAIL
+          value: "admin@yourstore.com"
+        - name: ADMIN_PASSWORD
+          value: "ChangeThisPassword123!"
+        - name: ADMIN_NAME
+          value: "Super Admin"
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: mongo-secret
+              key: auth-mongo-uri
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+  - port: 3001
+    targetPort: 3001
