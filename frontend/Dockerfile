@@ -1,9 +1,9 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install && chmod +x node_modules/.bin/vite
 COPY . .
-RUN ./node_modules/.bin/vite build
+RUN node node_modules/vite/bin/vite.js build
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
