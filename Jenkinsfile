@@ -49,9 +49,8 @@ stage('Debug Login') {
     steps {
         sh '''
             echo "Testing login..."
-            echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USER --password-stdin
+            printf '%s' "$DOCKERHUB_CREDS_PSW" | docker login -u marwen77 --password-stdin
             echo "Login result: $?"
-            docker info | grep Username
         '''
     }
 }
