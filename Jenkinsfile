@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_USER  = 'marwen77'
-        DOCKERHUB_CREDS = credentials('dockerhub-token')
+        DOCKERHUB_CREDS = credentials('dockerhub-credentials')
     
     }
 
@@ -55,18 +55,17 @@ stage('Debug Login') {
         '''
     }
 }
-        stage('Push to DockerHub') {
+  stage('Push to DockerHub') {
     steps {
-        withCredentials([string(credentialsId: 'dockerhub-token', variable: 'TOKEN')]) {
-            sh '''
-                echo $TOKEN | docker login -u marwen77 --password-stdin
-                docker push marwen77/auth-service:latest
-                docker push marwen77/product-service:latest
-                docker push marwen77/order-service:latest
-                docker push marwen77/api-gateway:latest
-                docker push marwen77/frontend:latest
-            '''
-        }
+        echo '📤 Pushing images to DockerHub...'
+        sh """
+            echo \${DOCKERHUB_CREDS_PSW} | docker login -u marwen77 --password-stdin
+            docker push marwen77/auth-service:latest
+            docker push marwen77/product-service:latest
+            docker push marwen77/order-service:latest
+            docker push marwen77/api-gateway:latest
+            docker push marwen77/frontend:latest
+        """
     }
 }
 
