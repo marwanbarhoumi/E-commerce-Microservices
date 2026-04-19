@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USER = 'marwan77'
+        DOCKERHUB_USER  = 'marwen77'
         DOCKERHUB_CREDS = credentials('dockerhub-credentials')
+    MARWAN = "BArhoumi"
     }
 
     stages {
@@ -44,18 +45,30 @@ pipeline {
                 }
             }
         }
-
+stage('Debug Login') {
+    steps {
+        sh '''
+            echo "Testing login..."
+            echo $DOCKERHUB_TOKEN | docker login -u $DOCKERHUB_USER --password-stdin
+            echo "Login result: $?"
+            docker info | grep Username
+        '''
+    }
+}
         stage('Push to DockerHub') {
-            steps {
-                echo '📤 Pushing images to DockerHub...'
-                sh 'echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin'
-                sh 'docker push $DOCKERHUB_USER/auth-service:latest'
-                sh 'docker push $DOCKERHUB_USER/product-service:latest'
-                sh 'docker push $DOCKERHUB_USER/order-service:latest'
-                sh 'docker push $DOCKERHUB_USER/api-gateway:latest'
-                sh 'docker push $DOCKERHUB_USER/frontend:latest'
-            }
+    steps {
+        withCredentials([string(credentialsId: 'dockerhub-token', variable: 'TOKEN')]) {
+            sh '''
+                echo $TOKEN | docker login -u marwen77 --password-stdin
+                docker push marwen77/auth-service:latest
+                docker push marwen77/product-service:latest
+                docker push marwen77/order-service:latest
+                docker push marwen77/api-gateway:latest
+                docker push marwen77/frontend:latest
+            '''
         }
+    }
+}
 
         stage('Deploy to Kubernetes') {
             steps {
