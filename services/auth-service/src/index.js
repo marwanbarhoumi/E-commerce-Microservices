@@ -25,7 +25,17 @@ const app = express(); // ننشئ تطبيق Express
 // الـ middleware هي كود يشتغل على كل طلبية قبل ما توصل للـ route
 
 app.use(cors());         // نسمح للـ frontend يبعث طلبات (من أي عنوان)
-app.use(express.json()); // نقولوله إنا نقبل بيانات بصيغة JSON
+app.use(express.json()); 
+// Prometheus metrics
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+// نقولوله إنا نقبل بيانات بصيغة JSON
 
 // ── 5. الـ Routes ────────────────────────────────────────────
 
