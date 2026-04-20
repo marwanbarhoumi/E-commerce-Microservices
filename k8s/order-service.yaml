@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: marwan/order-service:latest
+        image: marwen77/order-service:latest
+        imagePullPolicy: IfNotPresent 
         ports:
         - containerPort: 3003
         env:

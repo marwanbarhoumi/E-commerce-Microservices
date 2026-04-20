@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: product-service
-        image: marwan/product-service:latest
+        image: marwen77/product-service:latest
+        imagePullPolicy: IfNotPresent 
         ports:
         - containerPort: 3002
         env:

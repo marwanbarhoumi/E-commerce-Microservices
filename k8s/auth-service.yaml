@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: auth-service
-        image: marwan/auth-service:latest
+        image: marwen77/auth-service:latest
+        imagePullPolicy: IfNotPresent 
         ports:
         - containerPort: 3001
         env:

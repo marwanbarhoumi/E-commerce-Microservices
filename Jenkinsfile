@@ -1,21 +1,16 @@
 pipeline {
     agent any
-
     environment {
         DOCKERHUB_USER  = 'marwen77'
         DOCKERHUB_CREDS = credentials('dockerhub-credentials')
-    
     }
-
     stages {
-
         stage('Checkout') {
             steps {
                 echo '📥 Cloning repository...'
                 checkout scm
             }
         }
-
         stage('Build Docker Images') {
             parallel {
                 stage('auth-service') {
@@ -45,29 +40,19 @@ pipeline {
                 }
             }
         }
-stage('Debug Login') {
-    steps {
-        sh '''
-            echo "Testing login..."
-            printf '%s' "$DOCKERHUB_CREDS_PSW" | docker login -u marwen77 --password-stdin
-            echo "Login result: $?"
-        '''
-    }
-}
-  stage('Push to DockerHub') {
-    steps {
-        echo '📤 Pushing images to DockerHub...'
-        sh """
-            echo \${DOCKERHUB_CREDS_PSW} | docker login -u marwen77 --password-stdin
-            docker push marwen77/auth-service:latest
-            docker push marwen77/product-service:latest
-            docker push marwen77/order-service:latest
-            docker push marwen77/api-gateway:latest
-            docker push marwen77/frontend:latest
-        """
-    }
-}
-
+        stage('Push to DockerHub') {
+            steps {
+                echo '📤 Pushing images to DockerHub...'
+                sh '''
+                    printf '%s' "$DOCKERHUB_CREDS_PSW" | docker login -u marwen77 --password-stdin
+                    docker push marwen77/auth-service:latest
+                    docker push marwen77/product-service:latest
+                    docker push marwen77/order-service:latest
+                    docker push marwen77/api-gateway:latest
+                    docker push marwen77/frontend:latest
+                '''
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 echo '☸️ Deploying to Minikube...'
@@ -84,7 +69,6 @@ stage('Debug Login') {
                 sh 'kubectl rollout restart deployment/frontend'
             }
         }
-
         stage('Verify') {
             steps {
                 echo '✅ Checking deployments...'
@@ -93,7 +77,6 @@ stage('Debug Login') {
             }
         }
     }
-
     post {
         success {
             echo '🎉 Pipeline réussi — tout est déployé!'
