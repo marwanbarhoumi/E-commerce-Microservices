@@ -56,12 +56,15 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo '☸️ Deploying to Minikube...'
+                sh 'kubectl apply -f k8s/mongodb.yaml' 
                 sh 'kubectl apply -f k8s/mongo-secret.yaml'
                 sh 'kubectl apply -f k8s/auth-service.yaml'
                 sh 'kubectl apply -f k8s/product-service.yaml'
                 sh 'kubectl apply -f k8s/order-service.yaml'
                 sh 'kubectl apply -f k8s/api-gateway.yaml'
                 sh 'kubectl apply -f k8s/frontend.yaml'
+                sh 'kubectl apply -f k8s/prometheus-config.yaml'  // ← zid hedhi
+                sh 'kubectl apply -f k8s/prometheus.yaml'         // ← zid hedhi
                 sh 'kubectl rollout restart deployment/auth-service'
                 sh 'kubectl rollout restart deployment/product-service'
                 sh 'kubectl rollout restart deployment/order-service'
