@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ============================================================
 #  AUTH SERVICE — Dockerfile
 #  هذا الملف يحوّل السيرفر لـ Container
@@ -44,3 +45,12 @@ CMD ["node", "src/index.js"]
 #  النتيجة: صورة (image) جاهزة
 #  نشغّلوها: docker run -p 3001:3001 auth-service
 # ============================================================
+=======
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+EXPOSE 3001
+CMD ["node", "src/index.js"]
+>>>>>>> 66dea240831aa9ba4ca674ce8a64d1d7f9647c36

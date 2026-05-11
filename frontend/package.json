@@ -1,6 +1,10 @@
 {
   "name": "frontend",
   "version": "1.0.0",
+<<<<<<< HEAD
+=======
+  "type": "module",
+>>>>>>> 66dea240831aa9ba4ca674ce8a64d1d7f9647c36
   "description": "واجهة المستخدم",
   "scripts": {
     "dev": "vite",

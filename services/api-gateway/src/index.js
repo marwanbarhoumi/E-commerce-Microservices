@@ -12,6 +12,18 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+<<<<<<< HEAD
+=======
+// Prometheus metrics
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics();
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+>>>>>>> 66dea240831aa9ba4ca674ce8a64d1d7f9647c36
 app.use(express.urlencoded({ extended: true }));
 
 // ── Rate Limiting ─────────────────────────────────────────────
